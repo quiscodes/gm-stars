@@ -4,7 +4,7 @@ A command-line NBA roster-builder game. Pick a franchise, get a salary
 cap, and draft a 5-player starting lineup. Manage your budget wisely and 
 meet your roster requirements to get scored on your final team.
 
-## Status: In progress (target: 09/20/2026)
+## Status: In progress
 
 ## Currently Working
 - [x] Franchise selection with input validation (full name or nickname)
