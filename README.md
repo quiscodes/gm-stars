@@ -11,17 +11,17 @@ meet your roster requirements to get scored on your final team.
 - [x] Player selection with input validation
 - [x] Live salary cap tracking and affordability checks per pick
 - [x] Duplicate player prevention
-- [ ] Position requirement constraint
+- [x] Position requirement constraint
 - [ ] Roster grading based on player stats
 
 ## Planned for v2
 - Live stats pulled from a real API instead of a hardcoded player pool
 - Additional constraints (e.g. shooting percentages, PPG averages, etc)
 - Trade mechanics after initial draft
-- Front end development
+- Front end website development
 
 ## Tech
-Python, standard library only for now.
+Python, standard library for now.
 
 ## Run it
 python gm_stars.py
