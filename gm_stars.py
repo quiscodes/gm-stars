@@ -26,7 +26,7 @@ franchises = ["Boston Celtics", "Brooklyn Nets", "New York Knicks", "Philadelphi
                   "Dallas Mavericks", "Houston Rockets", "Memphis Grizzlies", "New Orleans Pelicans", "San Antonio Spurs"]
 
 
-constraints = ["Team must satisfy all 5 positions.", "PG must shoot > 30 percent from 3.", "C must average > 7 rebounds per game."]
+constraints = ["Team must satisfy all 5 positions.", "PG must shoot > 50 percent from FG.", "C must average > 7 rebounds per game."]
 
 players = {
     "Nikola Jokic": {"position": "C", "salary": 55_224_526, "ppg": 27.7, "rebounds": 12.9, "assists": 10.7, "fg_pct": .569},
@@ -110,7 +110,7 @@ def player_input(user_input):
     return None
 
 def play_game():
-    play = input("Would you like to play?\nyes or no\n")
+    play = input("Would you like to play? (yes/no)\n").lower().strip()
     
     if play == "yes":
         display_franchises()
@@ -122,7 +122,7 @@ def play_game():
             team = input("Please select your franchise.\n")
             franchise = team_input(team)
 
-        salary_cap = random.randint(150_000_000, 220_000_000)
+        salary_cap = random.randrange(100_000_000, 215_000_000, 5_000_000)
         remaining_salary = salary_cap
 
         display_players()
@@ -133,47 +133,44 @@ def play_game():
         roster = []
 
         for i in range(1, 6):
-            p = input(f"\nPlayer {i}. ")
-            player = player_input(p)
-            while player is None:
-                print("Player not found. Please try again.")
-                p = input(f"Player {i}. ")
+            while True:
+                p = input(f"\nPlayer {i}. ")
                 player = player_input(p)
-                
-            temp_salary = remaining_salary - players[player]['salary']
 
-            while temp_salary < 0:
-                print(f"You do not have enough money to draft this player! This player costs ${players[player]["salary"]:,}. Please try again.\n")
-                p = input(f"Player {i}. ")
-                player = player_input(p)
-                while player is None:
+                if player is None:
                     print("Player not found. Please try again.")
-                    p = input(f"Player {i}. ")
-                    player = player_input(p)
+                    continue
 
-                temp_salary = remaining_salary - players[player]["salary"]
+                if player in roster:
+                    print(f"{player} is already on your roster. Please try again with a new player.\n")
+                    continue
 
-            while player in roster:
-                print(f"{player} is already on your roster. Please try again with a new player.\n")
-                p = input(f"Player {i}. ")
-                player = player_input(p)
-                while player is None:
-                    print("Player not found. Please try again.")
-                    p = input(f"Player {i}. ")
-                    player = player_input(p)
+                if players[player]['salary'] > remaining_salary:
+                    print(f"You do not have enough money to draft this player! This player costs ${players[player]['salary']:,}. Please try again.\n")
+                    continue
+
+                break
 
             roster.append(player)
-            temp_salary = remaining_salary - players[player]["salary"]
-
-            remaining_salary = temp_salary
+            remaining_salary -= players[player]['salary']
             print(f"\nYour remaining salary is ${remaining_salary:,}.\n")
             
         print(f"Your completed 5-man roster:\n1. {roster[0]}\n2. {roster[1]}\n3. {roster[2]}\n4. {roster[3]}\n5. {roster[4]}\n")
-        check_roster(roster)
-        # grade_roster(roster)
+        passed = check_roster(roster)
 
+        overall = grade_roster(roster)
 
-        play = input("Would you like to play again?\nyes or no\n")
+        if passed:
+            print("Your roster has passed the constraint check!\n")
+            print(f"Team Overall Rating: {overall}")
+            print(team_label(overall))
+
+        else:
+            print("You have failed to create a roster that passes the constraint check!\n")
+            print("Team Overall Rating: 0")
+            print(f"Expected Overall: {overall}")
+
+        play = input("\nWould you like to play again? (yes/no)\n").lower().strip()
         if play == "yes":
             play_game()
     
@@ -187,14 +184,50 @@ def check_roster(roster):
 
     required_positions = {'PG', 'SG', 'SF', 'PF', 'C'}
 
-    if set(positions) == required_positions:
-        print("Your roster has passed the constraint check!\n")
-    else:
-        print("You have failed to create a roster that meets the constraints!\n")
+    return set(positions) == required_positions
 
 def grade_roster(roster):
-    pass
+    pra_values = []
 
+    for player in players:
+        pra = (players[player]['ppg'] + players[player]['rebounds'] + players[player]['assists'])
+
+        pra_values.append(pra)
+
+    pra_values.sort()
+
+    floor = sum(pra_values[:5])
+    ceiling = sum(pra_values[-5:])
+
+    team_pra = 0
+
+    for player in roster:
+        team_pra += players[player]['ppg'] + players[player]['rebounds'] + players[player]['assists']
+    
+    overall = 60 + (team_pra - floor) / (ceiling - floor) * 39
+    overall = max(60, min(99, overall))
+    overall = round(overall)
+
+    return overall
+
+def team_label(overall):
+    if overall >= 95:
+        return "Super Team"
+
+    elif overall >= 90:
+        return "Contenders"
+
+    elif overall >= 85:
+        return "Playoff Team"
+
+    elif overall >= 80:
+        return "Play-In Team"
+
+    elif overall >= 70:
+        return "Maybe next year!"
+
+    else:
+        return "Needs Rebuild"
 
 def main():
     print(banner)
