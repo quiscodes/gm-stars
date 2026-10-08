@@ -4,7 +4,7 @@ A command-line NBA roster-builder game. Pick a franchise, get a salary
 cap, and draft a 5-player starting lineup. Manage your budget wisely and 
 meet your roster requirements to get scored on your final team.
 
-## Status: In progress
+## Status: Complete (October 8. 2026)
 
 ## Currently Working
 - [x] Franchise selection with input validation (full name or nickname)
@@ -12,7 +12,7 @@ meet your roster requirements to get scored on your final team.
 - [x] Live salary cap tracking and affordability checks per pick
 - [x] Duplicate player prevention
 - [x] Position requirement constraint
-- [ ] Roster grading based on player stats
+- [x] Roster grading based on player stats
 
 ## Planned for v2
 - Live stats pulled from a real API instead of a hardcoded player pool
