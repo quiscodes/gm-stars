@@ -25,7 +25,6 @@ franchises = ["Boston Celtics", "Brooklyn Nets", "New York Knicks", "Philadelphi
                   "Atlanta Hawks", "Charlotte Hornets", "Miami Heat", "Orlando Magic", "Washington Wizards", 
                   "Dallas Mavericks", "Houston Rockets", "Memphis Grizzlies", "New Orleans Pelicans", "San Antonio Spurs"]
 
-salary_cap = random.randint(150_000_000, 250_000_000)
 
 constraints = ["Team must satisfy all 5 positions.", "PG must shoot > 30 percent from 3.", "C must average > 7 rebounds per game."]
 
@@ -123,11 +122,12 @@ def play_game():
             team = input("Please select your franchise.\n")
             franchise = team_input(team)
 
+        salary_cap = random.randint(150_000_000, 220_000_000)
         remaining_salary = salary_cap
 
+        display_players()
         print (f"\nYour salary cap is ${salary_cap:,}.")
         print("\nBuild your 5-man roster!")
-        display_players()
         print("\nYour constraint is:" , constraints[0])
 
         roster = []
@@ -163,6 +163,7 @@ def play_game():
                     player = player_input(p)
 
             roster.append(player)
+            temp_salary = remaining_salary - players[player]["salary"]
 
             remaining_salary = temp_salary
             print(f"\nYour remaining salary is ${remaining_salary:,}.\n")
@@ -187,7 +188,7 @@ def check_roster(roster):
     required_positions = {'PG', 'SG', 'SF', 'PF', 'C'}
 
     if set(positions) == required_positions:
-        print("Your roster has passed the constraint check!")
+        print("Your roster has passed the constraint check!\n")
     else:
         print("You have failed to create a roster that meets the constraints!\n")
 
