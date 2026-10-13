@@ -41,6 +41,11 @@ from operator import itemgetter
 ROSTER_SIZE = 5
 REQUIRED_POSITIONS = {"PG", "SG", "SF", "PF", "C"}
 
+# PRA benchmarks for the roster rating. These stay fixed as the player pool grows:
+# a 146-PRA roster rates about 85, and a 226-PRA roster rates about 99.
+PRA_FOR_85 = 146
+PRA_FOR_99 = 226
+
 CAP_MIN = 100_000_000
 CAP_MAX = 215_000_000
 CAP_STEP = 5_000_000
@@ -106,23 +111,14 @@ def player_pra(name):
     stats = players[name]
     return stats["ppg"] + stats["rebounds"] + stats["assists"]
 
-def build_grading_scale():
-    """Team PRA of the worst possible roster (floor) and best possible (ceiling)."""
-    pra_values = sorted(player_pra(name) for name in players)
-    return sum(pra_values[:ROSTER_SIZE]), sum(pra_values[-ROSTER_SIZE:])
-
-# Computed once when the server starts, not on every grade. It only changes if
-# the player pool changes (which will matter in v2.2 when stats come from an API).
-PRA_FLOOR, PRA_CEILING = build_grading_scale()
-
 def check_roster(roster):
     """Constraint #1: the roster must cover all five positions."""
     return {players[name]["position"] for name in roster} == REQUIRED_POSITIONS
 
 def grade_roster(roster):
-    """Map the team's total PRA onto a 60-99 overall rating (NBA 2K style)."""
+    """Map team PRA to an overall rating using fixed 85 and 99 benchmarks."""
     team_pra = sum(player_pra(name) for name in roster)
-    overall = 60 + (team_pra - PRA_FLOOR) / (PRA_CEILING - PRA_FLOOR) * 39
+    overall = 85 + (team_pra - PRA_FOR_85) / (PRA_FOR_99 - PRA_FOR_85) * 14
     return round(max(60, min(99, overall)))
 
 def team_label(overall):
