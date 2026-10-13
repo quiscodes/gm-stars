@@ -3,8 +3,9 @@
   ===========================================================================
   GM STARS v2 — templates/index.html  (the page layout)
   ===========================================================================
-  This ONE file is the whole site. app.py sends it a variable called `stage`,
-  and the {% if %} blocks below pick which screen to draw:
+  app.py sends this template a variable called `stage`, and the {% if %}
+  blocks below pick which screen to draw. autocomplete.js powers the searchable
+  suggestion menus for franchise and player inputs.
 
   Syntax cheat sheet:
       {{ something }}      print a value
@@ -30,7 +31,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#10151f">
   <title>GM Stars — Build Your Franchise</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css', v='2') }}">
+  <script src="{{ url_for('static', filename='autocomplete.js', v='2') }}" defer></script>
 </head>
 
 <body>
@@ -84,15 +86,19 @@
           <form class="form-row" action="{{ url_for('start_game') }}" method="post">
             <div class="field-wrap">
               <label for="franchise">Franchise</label>
-              {# `list="franchise-options"` links this input to the <datalist> below,
-                 which gives the browser's autocomplete suggestions. #}
-              <input id="franchise" name="franchise" list="franchise-options"
-                     placeholder="Type a team name…" autocomplete="off" required>
-              <datalist id="franchise-options">
+              <div class="autocomplete" data-autocomplete>
+                <input id="franchise" name="franchise" role="combobox"
+                       aria-autocomplete="list" aria-controls="franchise-options"
+                       aria-expanded="false" placeholder="Type a team name…"
+                       autocomplete="off" autocorrect="off" autocapitalize="words"
+                       spellcheck="false" required>
+                <div class="suggestion-list" id="franchise-options" role="listbox" hidden>
                 {% for team in franchises %}
-                  <option value="{{ team }}">
+                  <div class="suggestion-option" role="option" aria-selected="false"
+                       data-value="{{ team }}" data-search="{{ team|lower }}">{{ team }}</div>
                 {% endfor %}
-              </datalist>
+                </div>
+              </div>
             </div>
             <button class="button button-primary" type="submit">
               Start building <span aria-hidden="true">→</span>
@@ -170,14 +176,23 @@
               <form class="draft-form" method="post">
                 <div class="field-wrap">
                   <label for="player">Player {{ roster|length + 1 }}</label>
-                  <input id="player" name="player" list="player-options"
-                         placeholder="Search available players…" autocomplete="off" required>
-                  <datalist id="player-options">
+                  <div class="autocomplete" data-autocomplete>
+                    <input id="player" name="player" role="combobox"
+                           aria-autocomplete="list" aria-controls="player-options"
+                           aria-expanded="false" placeholder="Search available players…"
+                           autocomplete="off" autocorrect="off" autocapitalize="words"
+                           spellcheck="false" required>
+                    <div class="suggestion-list" id="player-options" role="listbox" hidden>
                     {% for player in choices %}
-                      <option value="{{ player.name }}"
-                              label="{{ player.position }} · ${{ "{:,}".format(player.salary) }}">
+                      <div class="suggestion-option" role="option" aria-selected="false"
+                           data-value="{{ player.name }}"
+                           data-search="{{ player.name }} {{ player.position }} {{ player.salary }}">
+                        <span class="suggestion-name">{{ player.name }}</span>
+                        <span class="suggestion-detail">{{ player.position }} · ${{ "{:,}".format(player.salary) }}</span>
+                      </div>
                     {% endfor %}
-                  </datalist>
+                    </div>
+                  </div>
                 </div>
                 <button class="button button-primary" type="submit">
                   Draft player <span aria-hidden="true">＋</span>

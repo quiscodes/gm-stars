@@ -21,6 +21,11 @@
   box-sizing: border-box;
 }
 
+html,
+body {
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
@@ -32,7 +37,8 @@ body {
 }
 
 .site-shell {
-  width: min(1100px, calc(100% - 40px));
+  width: calc(100% - 40px);
+  max-width: 1100px;
   margin: 0 auto;
 }
 
@@ -96,6 +102,8 @@ footer {
    ========================================================================== */
 
 .panel {
+  min-width: 0;
+  max-width: 100%;
   background: linear-gradient(145deg, rgba(29, 36, 49, .98), rgba(23, 29, 40, .98));
   border: 1px solid var(--line);
   border-radius: 18px;
@@ -178,6 +186,7 @@ footer {
 
 .hero-copy {
   max-width: 620px;
+  min-width: 0;
   z-index: 1;
 }
 
@@ -283,6 +292,73 @@ footer {
   box-shadow: 0 0 0 3px rgba(245, 189, 79, .12);
 }
 
+.autocomplete {
+  position: relative;
+  width: 100%;
+}
+
+.suggestion-list {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  max-height: 250px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 5px;
+  background: #171e29;
+  border: 1px solid #3a4556;
+  border-radius: 10px;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, .4);
+  -webkit-overflow-scrolling: touch;
+}
+
+.suggestion-list[hidden] {
+  display: none;
+}
+
+.suggestion-option[hidden],
+.suggestion-empty[hidden] {
+  display: none;
+}
+
+.suggestion-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 42px;
+  padding: 9px 11px;
+  border-radius: 7px;
+  color: var(--text);
+  font-size: 14px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.suggestion-option:hover,
+.suggestion-option.is-active {
+  background: rgba(245, 189, 79, .12);
+}
+
+.suggestion-name {
+  font-weight: 600;
+}
+
+.suggestion-detail {
+  flex: 0 0 auto;
+  color: var(--gold-light);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.suggestion-empty {
+  padding: 11px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
 .button {
   min-height: 48px;
   display: inline-flex;
@@ -362,6 +438,7 @@ footer {
   grid-template-columns: minmax(0, 1fr) 285px;
   gap: 18px;
   align-items: start;
+  min-width: 0;
 }
 
 .draft-main {
@@ -433,6 +510,8 @@ footer {
 .player-name {
   font-weight: 600;
   font-size: 13px;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .position-tag {
@@ -450,6 +529,7 @@ footer {
   text-align: right;
   font-size: 12px;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 /* Unfilled roster slots */
@@ -616,7 +696,7 @@ footer {
 
 @media (max-width: 520px) {
   .site-shell {
-    width: min(100% - 24px, 1100px);
+    width: calc(100% - 24px);
   }
 
   .topbar {
@@ -628,18 +708,29 @@ footer {
   }
 
   .hero {
-    min-height: 300px;
-    padding: 30px 22px;
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    padding: 28px 20px;
   }
 
   .hero h1 {
-    font-size: 38px;
+    font-size: clamp(32px, 9vw, 38px);
+    overflow-wrap: anywhere;
   }
 
   .hero-ball {
-    width: 185px;
-    height: 185px;
-    right: -112px;
+    display: grid;
+    width: 150px;
+    height: 150px;
+    right: -70px;
+    top: 50%;
+    opacity: .14;
+    transform: translateY(-50%);
+  }
+
+  .hero-copy {
+    width: 100%;
   }
 
   .setup-card {
@@ -695,6 +786,10 @@ footer {
 
   .draft-side {
     grid-template-columns: 1fr;
+  }
+
+  .suggestion-list {
+    max-height: 190px;
   }
 
   .result-score {
