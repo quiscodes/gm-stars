@@ -1,0 +1,716 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+/* ==========================================================================
+   VARIABLES & BASE
+   ========================================================================== */
+
+:root {
+  color-scheme: dark;
+  --bg: #10151f;
+  --panel: #191f2b;
+  --panel-soft: #202735;
+  --line: #303949;
+  --text: #f3f5f8;
+  --muted: #9ba6b6;
+  --gold: #f5bd4f;
+  --gold-light: #ffdc8b;
+  --green: #79d7a1;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at 78% 0%, #263044 0, transparent 38%),
+    var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+}
+
+.site-shell {
+  width: min(1100px, calc(100% - 40px));
+  margin: 0 auto;
+}
+
+main {
+  padding: 36px 0 52px;
+}
+
+/* ==========================================================================
+   TOP BAR
+   ========================================================================== */
+
+.topbar {
+  height: 78px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, .09);
+}
+
+.brand {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  color: var(--text);
+  text-decoration: none;
+  font: 700 17px 'Space Grotesk', sans-serif;
+  letter-spacing: .08em;
+}
+
+.brand strong {
+  color: var(--gold);
+}
+
+.brand-mark {
+  display: grid;
+  place-items: center;
+  width: 31px;
+  height: 31px;
+  border-radius: 9px;
+  background: var(--gold);
+  color: #171b24;
+  font-size: 18px;
+}
+
+/* Small uppercase labels shared across the site */
+.edition,
+.eyebrow,
+.step-pill,
+footer {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .16em;
+}
+
+.edition {
+  color: var(--muted);
+}
+
+/* ==========================================================================
+   SHARED COMPONENTS: panels, headings, text
+   ========================================================================== */
+
+.panel {
+  background: linear-gradient(145deg, rgba(29, 36, 49, .98), rgba(23, 29, 40, .98));
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, .16);
+}
+
+.eyebrow {
+  color: var(--gold);
+  margin: 0 0 12px;
+}
+
+/* Main page titles (home hero + draft page) */
+.hero h1,
+.draft-heading h1 {
+  font: 700 clamp(34px, 5vw, 54px)/1.04 'Space Grotesk', sans-serif;
+  letter-spacing: -.045em;
+  margin: 0;
+}
+
+.hero h1 span,
+.draft-heading h1 span {
+  color: var(--gold);
+}
+
+.intro {
+  color: #b5becb;
+  line-height: 1.7;
+  max-width: 540px;
+  margin: 18px 0 0;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.section-heading .eyebrow {
+  margin-bottom: 5px;
+}
+
+.section-heading h2,
+.results-card h2 {
+  font: 600 22px 'Space Grotesk', sans-serif;
+  margin: 0;
+}
+
+.section-heading + .muted {
+  margin: 8px 0 22px;
+  font-size: 14px;
+}
+
+.step-pill {
+  color: var(--gold-light);
+  background: rgba(245, 189, 79, .1);
+  border: 1px solid rgba(245, 189, 79, .25);
+  border-radius: 999px;
+  padding: 9px 12px;
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   HOME PAGE: hero
+   ========================================================================== */
+
+.hero {
+  min-height: 320px;
+  padding: 44px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  overflow: hidden;
+  position: relative;
+}
+
+.hero-copy {
+  max-width: 620px;
+  z-index: 1;
+}
+
+.feature-row {
+  display: flex;
+  gap: 22px;
+  margin-top: 30px;
+  color: #c4ccd7;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* Decorative basketball circle on the right side of the hero */
+.hero-ball {
+  position: absolute;
+  right: 40px;
+  width: 245px;
+  height: 245px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(245, 189, 79, .4);
+  border-radius: 50%;
+  color: var(--gold);
+  font-size: 48px;
+  background: radial-gradient(circle, rgba(245, 189, 79, .14), rgba(245, 189, 79, .015) 68%);
+  box-shadow:
+    0 0 0 24px rgba(245, 189, 79, .025),
+    0 0 0 50px rgba(245, 189, 79, .02);
+}
+
+.hero-ball:before,
+.hero-ball:after {
+  content: '';
+  position: absolute;
+  border: 1px solid rgba(245, 189, 79, .4);
+  border-radius: 50%;
+}
+
+.hero-ball:before {
+  inset: 27% 0;
+  border-top-color: transparent;
+  border-bottom-color: transparent;
+}
+
+.hero-ball:after {
+  inset: 27% 0;
+  border-left-color: transparent;
+  border-right-color: transparent;
+}
+
+/* ==========================================================================
+   HOME PAGE: franchise setup card (also used for the results card spacing)
+   ========================================================================== */
+
+.setup-card,
+.results-card {
+  margin-top: 20px;
+  padding: 28px 32px;
+}
+
+/* ==========================================================================
+   FORMS & BUTTONS
+   ========================================================================== */
+
+.form-row,
+.draft-form {
+  display: flex;
+  align-items: end;
+  gap: 12px;
+}
+
+.field-wrap {
+  flex: 1;
+  min-width: 0;
+}
+
+.field-wrap label {
+  display: block;
+  color: #c6ced9;
+  font-size: 12px;
+  font-weight: 700;
+  margin: 0 0 8px;
+}
+
+.field-wrap input {
+  width: 100%;
+  height: 48px;
+  padding: 0 15px;
+  background: #111720;
+  border: 1px solid #3a4556;
+  border-radius: 9px;
+  color: var(--text);
+  font: inherit;
+  outline: none;
+}
+
+.field-wrap input::placeholder {
+  color: #798597;
+}
+
+.field-wrap input:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(245, 189, 79, .12);
+}
+
+.button {
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 0 19px;
+  border: 0;
+  border-radius: 9px;
+  text-decoration: none;
+  font: 700 13px 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: transform .15s ease, filter .15s ease;
+}
+
+.button:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.06);
+}
+
+.button-primary {
+  background: var(--gold);
+  color: #1d2026;
+}
+
+.button span {
+  font-size: 18px;
+}
+
+.field-hint {
+  color: #8390a2;
+  font-size: 11px;
+  margin: 10px 0 0;
+}
+
+.alert {
+  color: #ffc0b8;
+  background: rgba(235, 92, 76, .1);
+  border: 1px solid rgba(235, 92, 76, .28);
+  border-radius: 9px;
+  padding: 11px 13px;
+  font-size: 13px;
+}
+
+/* ==========================================================================
+   DRAFT PAGE: heading & layout
+   ========================================================================== */
+
+.draft-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  margin: 4px 0 24px;
+}
+
+.draft-heading .eyebrow {
+  margin-bottom: 9px;
+}
+
+.draft-heading h1 {
+  font-size: clamp(32px, 4vw, 44px);
+}
+
+.text-link {
+  color: var(--muted);
+  font-size: 13px;
+  text-decoration: none;
+  padding-bottom: 5px;
+}
+
+.text-link:hover {
+  color: var(--gold);
+}
+
+.draft-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 285px;
+  gap: 18px;
+  align-items: start;
+}
+
+.draft-main {
+  padding: 27px;
+}
+
+.draft-form {
+  margin-top: 22px;
+}
+
+.draft-side {
+  display: grid;
+  gap: 14px;
+}
+
+/* ==========================================================================
+   DRAFT PAGE: constraint banner
+   ========================================================================== */
+
+.constraint {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 14px 16px;
+  margin: 22px 0;
+  border-radius: 10px;
+  background: rgba(245, 189, 79, .08);
+  border: 1px solid rgba(245, 189, 79, .18);
+  color: #c6ced9;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.constraint strong {
+  color: var(--gold-light);
+}
+
+.constraint-icon {
+  color: var(--gold);
+  font-size: 20px;
+}
+
+/* ==========================================================================
+   ROSTER LIST (draft page + results page)
+   ========================================================================== */
+
+.roster-list {
+  display: grid;
+  gap: 8px;
+}
+
+.roster-row {
+  min-height: 52px;
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr) 48px minmax(88px, auto);
+  gap: 10px;
+  align-items: center;
+  padding: 7px 12px;
+  background: #141a24;
+  border: 1px solid #283140;
+  border-radius: 9px;
+}
+
+.roster-number {
+  color: #758196;
+  font: 600 12px 'Space Grotesk', sans-serif;
+}
+
+.player-name {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.position-tag {
+  color: var(--gold-light);
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  background: rgba(245, 189, 79, .1);
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.salary {
+  color: #c2cbd7;
+  text-align: right;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Unfilled roster slots */
+.roster-open {
+  border-style: dashed;
+  background: rgba(20, 26, 36, .48);
+}
+
+.empty-roster {
+  color: var(--muted);
+  font-size: 13px;
+  padding: 12px 2px;
+}
+
+/* ==========================================================================
+   DRAFT PAGE: sidebar (salary cap card)
+   ========================================================================== */
+
+.cap-card {
+  padding: 22px;
+}
+
+.cap-card .eyebrow {
+  margin-bottom: 14px;
+}
+
+.cap-amount {
+  font: 700 30px 'Space Grotesk', sans-serif;
+  color: var(--gold);
+  margin: 0;
+  letter-spacing: -.04em;
+}
+
+.cap-card .muted {
+  font-size: 12px;
+  margin: 4px 0 18px;
+}
+
+.cap-progress {
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: 7px;
+  overflow: hidden;
+  border: 0;
+  border-radius: 10px;
+  background: #303847;
+}
+
+.cap-progress::-webkit-progress-bar {
+  background: #303847;
+  border-radius: 10px;
+}
+
+.cap-progress::-webkit-progress-value,
+.cap-progress::-moz-progress-bar {
+  background: linear-gradient(90deg, #e99d39, var(--gold-light));
+  border-radius: 10px;
+}
+
+/* ==========================================================================
+   RESULTS PAGE
+   ========================================================================== */
+
+.result-hero {
+  text-align: center;
+  padding: 42px 25px;
+}
+
+.result-pass {
+  border-color: rgba(121, 215, 161, .35);
+}
+
+.result-hero .eyebrow {
+  margin-bottom: 15px;
+}
+
+.result-score {
+  font: 700 88px/.95 'Space Grotesk', sans-serif;
+  color: var(--gold);
+  letter-spacing: -.07em;
+}
+
+.result-pass .result-score {
+  color: var(--green);
+}
+
+.result-zero {
+  color: #ff8b7d;
+}
+
+.result-kicker {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .2em;
+  margin: 9px 0 14px;
+}
+
+.result-hero h1 {
+  font: 700 30px 'Space Grotesk', sans-serif;
+  margin: 0;
+}
+
+.result-hero .intro {
+  margin: 10px auto 20px;
+}
+
+.results-card .section-heading {
+  margin-bottom: 20px;
+}
+
+/* ==========================================================================
+   FOOTER
+   ========================================================================== */
+
+footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 0 24px;
+  color: #687486;
+  font-size: 9px;
+}
+
+/* ==========================================================================
+   RESPONSIVE: tablets and small laptops (max 760px)
+   ========================================================================== */
+
+@media (max-width: 760px) {
+  .hero {
+    padding: 35px 28px;
+  }
+
+  .hero-ball {
+    right: -105px;
+    opacity: .45;
+  }
+
+  .hero-copy {
+    max-width: 100%;
+  }
+
+  .feature-row {
+    flex-wrap: wrap;
+    gap: 10px 18px;
+  }
+
+  .draft-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .draft-side {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .draft-main {
+    padding: 21px;
+  }
+}
+
+/* ==========================================================================
+   RESPONSIVE: phones (max 520px)
+   ========================================================================== */
+
+@media (max-width: 520px) {
+  .site-shell {
+    width: min(100% - 24px, 1100px);
+  }
+
+  .topbar {
+    height: 64px;
+  }
+
+  .edition {
+    font-size: 8px;
+  }
+
+  .hero {
+    min-height: 300px;
+    padding: 30px 22px;
+  }
+
+  .hero h1 {
+    font-size: 38px;
+  }
+
+  .hero-ball {
+    width: 185px;
+    height: 185px;
+    right: -112px;
+  }
+
+  .setup-card {
+    padding: 23px 19px;
+  }
+
+  .form-row,
+  .draft-form {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .form-row .button,
+  .draft-form .button {
+    width: 100%;
+  }
+
+  .draft-heading {
+    align-items: start;
+  }
+
+  .draft-heading h1 {
+    font-size: 34px;
+  }
+
+  .draft-main {
+    padding: 17px 13px;
+  }
+
+  .section-heading h2,
+  .results-card h2 {
+    font-size: 19px;
+  }
+
+  .step-pill {
+    font-size: 8px;
+    padding: 8px;
+  }
+
+  .roster-row {
+    grid-template-columns: 25px minmax(0, 1fr) 39px minmax(72px, auto);
+    gap: 6px;
+    padding: 7px 8px;
+  }
+
+  .player-name {
+    font-size: 11px;
+  }
+
+  .salary {
+    font-size: 10px;
+  }
+
+  .draft-side {
+    grid-template-columns: 1fr;
+  }
+
+  .result-score {
+    font-size: 74px;
+  }
+}
+
+/* ==========================================================================
+   ACCESSIBILITY: respect "reduce motion" system setting
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition: none !important;
+  }
+}
