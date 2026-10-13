@@ -1,4 +1,4 @@
-# GM Stars V2
+# GM Stars v2
 
 A browser-based NBA roster-builder game built with Flask. Choose a franchise, get a randomized salary cap, and draft a five-player roster. Stay under budget and meet the roster requirement to earn your team grade.
 
@@ -14,9 +14,6 @@ A browser-based NBA roster-builder game built with Flask. Choose a franchise, ge
 - [ ] Leaderboards
 - [ ] Player images, animations, logos, etc
 - [ ] Ranked mode (Play competitively against other users)
-
-## Planned for Later
-- Replace the hardcoded player pool with data from a real NBA API
 
 ## Tech
 Python, Flask, HTML, CSS, and Jinja templates.
