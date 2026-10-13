@@ -1,27 +1,29 @@
-# GM Stars
+# GM Stars V2
 
-A command-line NBA roster-builder game. Pick a franchise, get a salary
-cap, and draft a 5-player starting lineup. Manage your budget wisely and 
-meet your roster requirements to get scored on your final team.
+A browser-based NBA roster-builder game built with Flask. Choose a franchise, get a randomized salary cap, and draft a five-player roster. Stay under budget and meet the roster requirement to earn your team grade.
 
-## Status: Complete (October 8. 2026)
+## Status: In progress
 
 ## Currently Working
-- [x] Franchise selection with input validation (full name or nickname)
-- [x] Player selection with input validation
-- [x] Live salary cap tracking and affordability checks per pick
-- [x] Duplicate player prevention
-- [x] Position requirement constraint
-- [x] Roster grading based on player stats
+- [x] Flask website for playing GM Stars in a browser
+- [x] Type-to-filter suggestions
+- [x] Styled, responsive pages for the start screen, draft, and results
+- [ ] Real NBA data and APIs
+- [ ] Difficulty System (Easy/Hard/Impossible)
+- [ ] Account creation to save past teams, high scores, etc
+- [ ] Leaderboards
+- [ ] Player images, animations, logos, etc
+- [ ] Ranked mode (Play competitively against other users)
 
-## Planned for v2
-- Live stats pulled from a real API instead of a hardcoded player pool
-- Additional constraints (e.g. shooting percentages, PPG averages, etc)
-- Trade mechanics after initial draft
-- Front end website development
+## Planned for Later
+- Replace the hardcoded player pool with data from a real NBA API
 
 ## Tech
-Python, standard library for now.
+Python, Flask, HTML, CSS, and Jinja templates.
 
 ## Run it
-python gm_stars.py
+From the project folder:
+
+cd v2
+python3 -m pip install flask
+python3 app.py
