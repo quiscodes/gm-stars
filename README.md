@@ -10,15 +10,15 @@ A browser-based NBA roster-builder game built with Flask. Choose a franchise, ge
 - [x] Flask website for playing GM Stars in a browser
 - [x] Type-to-filter suggestions
 - [x] Styled, responsive pages for the start screen, draft, and results
-- [ ] Real NBA data and APIs
-- [ ] Difficulty System (Easy/Hard/Impossible)
+- [x] Real NBA data and salaries
+- [x] Difficulty System (Easy/Hard/Impossible)
 - [ ] Account creation to save past teams, high scores, etc
 - [ ] Leaderboards
 - [ ] Player images, animations, logos, etc
 - [ ] Ranked mode (Play competitively against other users)
 
 ## Tech
-Python, Flask, HTML, CSS, and Jinja templates.
+Python, Flask, HTML, CSS, Jinja templates, and JavaScript.
 
 ## Run it
 From the project folder:
