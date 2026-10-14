@@ -112,7 +112,7 @@
               Start building <span aria-hidden="true">→</span>
             </button>
           </form>
-          <p class="field-hint">Type to filter the team list, then choose a suggestion. Salary caps range from $50M to $200M based on difficulty.</p>
+          <p class="field-hint">Salary caps range from $50M to $200M based on difficulty.</p>
         </section>
 
 
@@ -146,11 +146,17 @@
             <div class="challenge-box">
               <p class="challenge-title"><span class="constraint-icon">✦</span><strong>Roster challenges</strong></p>
               <ul class="challenge-list">
-                {% if difficulty != "Hard" %}
-            <li>Draft one player at each of the five positions.</li>
-            {% endif %}
-              </ul>
-            </div>
+                {% if difficulty == "Hard" %}
+                {% for challenge in challenges %}
+                    <li>{{ challenge }}</li>
+                {% endfor %}
+                {% else %}
+                    <li>Draft one player at each of the five positions.</li>
+                    {% for challenge in challenges %}
+                    <li>{{ challenge }}</li>
+                {% endfor %}
+                {% endif %}
+                </ul>
 
             {# Roster list: drafted players first, then empty slots #}
             <div class="roster-list">
@@ -251,7 +257,7 @@
             <div class="result-score">{{ overall }}</div>
             <p class="result-kicker">TEAM OVERALL</p>
             <h1>{{ label }}</h1>
-            <p class="intro">Your roster passed the constraint check. Your front office has delivered!</p>
+            <p class="intro">Your roster has passed its challenge. Your front office has delivered!</p>
           {% else %}
             {# Constraint failed: score is 0, but show what they would have earned #}
             <div class="result-score result-zero">0</div>
