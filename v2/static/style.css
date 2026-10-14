@@ -432,6 +432,46 @@ footer {
   line-height: 1.5;
 }
 
+.challenge-results {
+  display: grid;
+  gap: 10px;
+}
+
+.challenge-result {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 13px 15px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .025);
+  color: #c4ccd7;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.challenge-result-status {
+  flex: 0 0 88px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .08em;
+}
+
+.challenge-passed .challenge-result-status {
+  color: var(--green);
+}
+
+.challenge-failed .challenge-result-status {
+  color: #ff9387;
+}
+
+@media (max-width: 520px) {
+  .challenge-result {
+    flex-direction: column;
+    gap: 5px;
+  }
+}
+
 .alert {
   color: #ffc0b8;
   background: rgba(235, 92, 76, .1);

@@ -43,13 +43,13 @@ REQUIRED_POSITIONS = {"PG", "SG", "SF", "PF", "C"}
 # Team PRA totals mapped to overall grades. The curve rewards strong rosters
 # while leaving room for both low 60s and 99 overall teams.
 PRA_GRADE_ANCHORS = (
-    (40, 60),
-    (70, 65),
-    (90, 72),
-    (110, 82),
-    (130, 90),
-    (150, 95),
-    (175, 99),
+    (85, 60),
+    (105, 68),
+    (125, 78),
+    (145, 87),
+    (165, 93),
+    (190, 97),
+    (215, 99),
 )
 
 CAP_STEP = 5_000_000
@@ -401,8 +401,9 @@ def draft():
         choices=player_choices(),
         challenges=([
             "Draft one player at each position from their assigned team: " + ", ".join(
-                f"{position} → {TEAM_NAMES.get(team, team)}" for position, team in session.get("position_teams", {}).items()
-            )
+            f"{position} → {TEAM_NAMES.get(session['position_teams'][position], session['position_teams'][position])}"
+            for position in POSITIONS
+            if position in session.get("position_teams", {}))
         ] if session.get("position_teams") else []) + session.get("challenges", []),
         error=error,
     )
@@ -414,7 +415,36 @@ def results():
     if len(roster) != ROSTER_SIZE:
         return redirect(url_for("draft"))
 
-    passed = check_roster(roster)
+    assignments = session.get("position_teams", {})
+    challenge_results = []
+
+    if session.get("difficulty") == "hard":
+        assigned_teams = ", ".join(
+            f"{position} → {TEAM_NAMES.get(assignments[position], assignments[position])}"
+            for position in POSITIONS
+            if position in assignments
+        )
+        challenge_results.append({
+            "text": f"Draft one player at each position from its assigned team: {assigned_teams}",
+            "passed": challenge_pass(
+                "For each position, draft a player from its assigned team.",
+                roster,
+                assignments,
+            ),
+        })
+    else:
+        challenge_results.append({
+            "text": "Draft one player at each of the five positions.",
+            "passed": challenge_pass("Team must satisfy all 5 positions.", roster),
+        })
+
+    for rule in session.get("challenges", []):
+        challenge_results.append({
+            "text": rule,
+            "passed": challenge_pass(rule, roster, assignments),
+        })
+
+    passed = all(item["passed"] for item in challenge_results)
     overall = grade_roster(roster)
     return render_template(
         "index.html",
@@ -425,6 +455,7 @@ def results():
         passed=passed,
         overall=overall,
         label=team_label(overall),
+        challenge_results=challenge_results,
     )
 
 @app.route("/new-game")

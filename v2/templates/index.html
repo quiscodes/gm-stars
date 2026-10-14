@@ -60,9 +60,9 @@
             <h1>Build a roster<br><span>worth remembering.</span></h1>
             <p class="intro">Pick your franchise, work with the salary cap, and put together a 5-player lineup that can take over the league.</p>
             <div class="feature-row">
-              <span>01 / Choose a team</span>
-              <span>02 / Draft five stars</span>
-              <span>03 / Get your grade</span>
+              <span>1 / Choose a team</span>
+              <span>2 / Draft five stars</span>
+              <span>3 / Get your grade</span>
             </div>
           </div>
           {# Decorative circle, styled in style.css; hidden from screen readers #}
@@ -103,9 +103,9 @@
             <div class="field-wrap difficulty-field">
               <label for="difficulty">Difficulty</label>
               <select id="difficulty" name="difficulty">
-                <option value="easy">Easy · $150M–$200M · five positions</option>
-                <option value="hard">Hard · $100M–$150M · random team per position + challenge</option>
-                <option value="impossible">Impossible · $50M–$100M · five positions + 2 challenges</option>
+                <option value="easy">Easy</option>
+                <option value="hard">Hard</option>
+                <option value="impossible">Impossible</option>
               </select>
             </div>
             <button class="button button-primary" type="submit">
@@ -146,8 +146,9 @@
             <div class="challenge-box">
               <p class="challenge-title"><span class="constraint-icon">✦</span><strong>Roster challenges</strong></p>
               <ul class="challenge-list">
-                <li>Draft one player at each of the five positions.</li>
-                {% for challenge in challenges %}<li>{{ challenge }}</li>{% endfor %}
+                {% if difficulty != "Hard" %}
+            <li>Draft one player at each of the five positions.</li>
+            {% endif %}
               </ul>
             </div>
 
@@ -168,7 +169,7 @@
               {# One dashed placeholder row per unfilled spot #}
               {% for slot in range(roster|length, roster_size) %}
                 <div class="roster-row roster-open">
-                  <span class="roster-number">0{{ slot + 1 }}</span>
+                  <span class="roster-number">{{ slot + 1 }}</span>
                   <span class="muted">Open roster spot</span>
                   <span class="position-tag">—</span>
                   <span class="salary">—</span>
@@ -226,12 +227,10 @@
               <p class="cap-foot">${{ "{:,}".format(salary_cap - remaining_salary) }} committed</p>
             </div>
 
-            {# NOTE: .tip-card and .tip-star have no rules in style.css yet.
-               The wording is also tied to constraint #1 (positions) and will
-               need to change once constraints are random. #}
+            
             <div class="tip-card">
               <span class="tip-star">★</span>
-              <p><strong>GM tip:</strong><br>Every pick counts. Meet every challenge to earn your roster grade.</p>
+              <p><strong>GM tip:</strong><br>Every pick counts. Pass every roster challenge to earn your grade.</p>
             </div>
           </aside>
         </section>
@@ -264,6 +263,26 @@
           <a class="button button-primary" href="{{ url_for('new_game') }}">
             Play again <span aria-hidden="true">→</span>
           </a>
+        </section>
+
+        <section class="results-card panel">
+        <div class="section-heading">
+        <div>
+        <p class="eyebrow">CHALLENGE REVIEW</p>
+        <h2>How you did</h2>
+        </div>
+        </div>
+
+        <div class="challenge-results">
+        {% for item in challenge_results %}
+        <div class="challenge-result {% if item.passed %}challenge-passed{% else %}challenge-failed{% endif %}">
+        <span class="challenge-result-status">
+          {{ "PASSED" if item.passed else "NOT PASSED" }}
+        </span>
+        <span>{{ item.text }}</span>
+        </div>
+        {% endfor %}
+        </div>
         </section>
 
         {# Final roster. Here `roster` is a list of dicts (name, position,

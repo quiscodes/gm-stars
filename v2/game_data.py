@@ -47,7 +47,7 @@ constraints = [
     # Ball security and salary challenges
     "The team must average no more than 7 turnovers per game combined.",
     "At least three players must average fewer than 2 turnovers per game.",
-    "At least two players must have a salary of $30 million or less.",
+    "At least two players must have a salary of $15 million or less.",
     "No more than one player may have a salary above $35 million.",
 ]
 
