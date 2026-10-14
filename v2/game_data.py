@@ -12,8 +12,44 @@ franchises = ["Boston Celtics", "Brooklyn Nets", "New York Knicks", "Philadelphi
                   "Dallas Mavericks", "Houston Rockets", "Memphis Grizzlies", "New Orleans Pelicans", "San Antonio Spurs"]
 
 
+constraints = [
+    "Team must satisfy all 5 positions.",
 
-constraints = ['Team must satisfy all 5 positions.', 'PG must shoot > 50 percent from FG.', 'C must average > 7 rebounds per game.']
+    # Team and position challenges
+    "For each position, draft a player from its assigned team: {position_team_assignments}.",
+    "The {position} must play for the {team}.",
+    "All five players must play for the {team}.",
+    "At least two players must play for the {team}.",
+    "No more than two players may play for the same team.",
+
+    # Shooting challenges
+    "At least three players must shoot 35% or better from three.",
+    "The team average 3-point percentage must be at least 38%.",
+    "The team average 3-point percentage must be at least 40%.",
+    "At least three players must shoot 45% or better from the field.",
+    "The team average field-goal percentage must be at least 47%.",
+
+    # Scoring and playmaking challenges
+    "At least two players must average 20 or more points per game.",
+    "At least one player must average 25 or more points per game.",
+    "At least two players must each average 25 or more PRA per game.",
+    "The point guard must average at least 5 assists per game.",
+    "The team must combine for at least 15 assists per game.",
+
+    # Rebounding and defense challenges
+    "The center must average at least 8 rebounds per game.",
+    "The center must average at least 10 rebounds per game.",
+    "The power forward and center must combine for at least 15 rebounds per game.",
+    "The team must combine for at least 5 steals and blocks per game.",
+    "At least two players must average 1 or more steals per game.",
+    "The center must average at least 1 block per game.",
+
+    # Ball security and salary challenges
+    "The team must average no more than 7 turnovers per game combined.",
+    "At least three players must average fewer than 2 turnovers per game.",
+    "At least two players must have a salary of $30 million or less.",
+    "No more than one player may have a salary above $35 million.",
+]
 
 players = {
     "Nikola Jokic": {"position": "C", "salary": 55_224_526, "ppg": 27.7, "rebounds": 12.9, "assists": 10.7, "fg_pct": .569},

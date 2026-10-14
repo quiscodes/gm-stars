@@ -19,7 +19,7 @@
   Variables app.py provides (not every stage gets every one):
       franchises, players, roster_size  -> every stage
       error                             -> home and draft, only when something failed
-      franchise, salary_cap, remaining_salary, roster, choices, constraint -> draft
+      franchise, difficulty, salary_cap, remaining_salary, roster, choices, challenges -> draft
       franchise, roster, passed, overall, label                            -> results
   ===========================================================================
 #}
@@ -31,8 +31,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#10151f">
   <title>GM Stars — Build Your Franchise</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css', v='2') }}">
-  <script src="{{ url_for('static', filename='autocomplete.js', v='2') }}" defer></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css', v='3') }}">
+  <script src="{{ url_for('static', filename='autocomplete.js', v='3') }}" defer></script>
 </head>
 
 <body>
@@ -78,7 +78,7 @@
             </div>
             <span class="step-pill">STEP 1</span>
           </div>
-          <p class="muted">Start with any NBA team. Your salary cap is randomized for every run.</p>
+          <p class="muted">Choose a franchise and difficulty. Your salary cap is randomized within that mode.</p>
 
           {# `error` only exists if /start rejected the input #}
           {% if error %}<p class="alert" role="alert">{{ error }}</p>{% endif %}
@@ -100,11 +100,19 @@
                 </div>
               </div>
             </div>
+            <div class="field-wrap difficulty-field">
+              <label for="difficulty">Difficulty</label>
+              <select id="difficulty" name="difficulty">
+                <option value="easy">Easy · $150M–$200M · five positions</option>
+                <option value="hard">Hard · $100M–$150M · random team per position + challenge</option>
+                <option value="impossible">Impossible · $50M–$100M · five positions + 2 challenges</option>
+              </select>
+            </div>
             <button class="button button-primary" type="submit">
               Start building <span aria-hidden="true">→</span>
             </button>
           </form>
-          <p class="field-hint">Type to filter the team list, then choose a suggestion.</p>
+          <p class="field-hint">Type to filter the team list, then choose a suggestion. Salary caps range from $50M to $200M based on difficulty.</p>
         </section>
 
 
@@ -116,7 +124,7 @@
         {# Page title + "Start over" link #}
         <section class="draft-heading">
           <div>
-            <p class="eyebrow">{{ franchise }} · FRANCHISE MODE</p>
+            <p class="eyebrow">{{ franchise }} · {{ difficulty|upper }} MODE</p>
             <h1>Build your <span>starting five.</span></h1>
           </div>
           <a class="text-link" href="{{ url_for('new_game') }}">Start over</a>
@@ -135,11 +143,13 @@
               <span class="step-pill">{{ roster|length }} / {{ roster_size }} SELECTED</span>
             </div>
 
-            {# The rule the player has to satisfy #}
-            <p class="constraint">
-              <span class="constraint-icon">✦</span>
-              <span><strong>Roster challenge</strong><br>{{ constraint }}</span>
-            </p>
+            <div class="challenge-box">
+              <p class="challenge-title"><span class="constraint-icon">✦</span><strong>Roster challenges</strong></p>
+              <ul class="challenge-list">
+                <li>Draft one player at each of the five positions.</li>
+                {% for challenge in challenges %}<li>{{ challenge }}</li>{% endfor %}
+              </ul>
+            </div>
 
             {# Roster list: drafted players first, then empty slots #}
             <div class="roster-list">
@@ -221,7 +231,7 @@
                need to change once constraints are random. #}
             <div class="tip-card">
               <span class="tip-star">★</span>
-              <p><strong>GM tip:</strong><br>Every pick counts. Pass your roster challenge to receive the best possible score.</p>
+              <p><strong>GM tip:</strong><br>Every pick counts. Meet every challenge to earn your roster grade.</p>
             </div>
           </aside>
         </section>
@@ -235,7 +245,7 @@
         {# Score banner. Class `result-pass` (green) or `result-fail`.
            NOTE: .result-fail has no rule in style.css yet. #}
         <section class="result-hero panel {% if passed %}result-pass{% else %}result-fail{% endif %}">
-          <p class="eyebrow">{{ franchise }} · SEASON COMPLETE</p>
+          <p class="eyebrow">{{ franchise }} · {{ difficulty|upper }} · SEASON COMPLETE</p>
 
           {% if passed %}
             {# Constraint passed: show the real grade and its label #}
