@@ -35,19 +35,25 @@ from operator import itemgetter
 # -----------------------------------------------------------------------------
 # SETTINGS
 # -----------------------------------------------------------------------------
-# Game rules live here as named constants so you never have to hunt for a
-# "magic number" buried inside a function.
+
 
 ROSTER_SIZE = 5
 REQUIRED_POSITIONS = {"PG", "SG", "SF", "PF", "C"}
 
-# PRA benchmarks for the roster rating. These stay fixed as the player pool grows:
-# a 146-PRA roster rates about 85, and a 226-PRA roster rates about 99.
-PRA_FOR_85 = 146
-PRA_FOR_99 = 226
+# Team PRA totals mapped to overall grades. The curve rewards strong rosters
+# while leaving room for both low 60s and 99 overall teams.
+PRA_GRADE_ANCHORS = (
+    (40, 60),
+    (70, 65),
+    (90, 72),
+    (110, 82),
+    (130, 90),
+    (150, 95),
+    (175, 99),
+)
 
-CAP_MIN = 100_000_000
-CAP_MAX = 215_000_000
+CAP_MIN = 160_000_000
+CAP_MAX = 220_000_000
 CAP_STEP = 5_000_000
 
 app = Flask(__name__)
@@ -116,10 +122,19 @@ def check_roster(roster):
     return {players[name]["position"] for name in roster} == REQUIRED_POSITIONS
 
 def grade_roster(roster):
-    """Map team PRA to an overall rating using fixed 85 and 99 benchmarks."""
+    """Grade the five-player roster from its combined points, rebounds, and assists."""
     team_pra = sum(player_pra(name) for name in roster)
-    overall = 85 + (team_pra - PRA_FOR_85) / (PRA_FOR_99 - PRA_FOR_85) * 14
-    return round(max(60, min(99, overall)))
+
+    for (lower_pra, lower_grade), (upper_pra, upper_grade) in zip(
+        PRA_GRADE_ANCHORS,
+        PRA_GRADE_ANCHORS[1:],
+    ):
+        if team_pra <= upper_pra:
+            progress = (team_pra - lower_pra) / (upper_pra - lower_pra)
+            grade = lower_grade + progress * (upper_grade - lower_grade)
+            return round(max(60, min(99, grade)))
+
+    return 99
 
 def team_label(overall):
     """Turn the 60-99 number into a title."""

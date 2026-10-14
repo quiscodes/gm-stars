@@ -1,2 +1,5 @@
 Flask
 gunicorn
+
+# https://www.basketball-reference.com/leagues/NBA_2026_per_game.html
+# https://www.spotrac.com/nba/rankings/player/_/year/2026/sort/cap_total

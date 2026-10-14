@@ -1,6 +1,8 @@
 """Original hardcoded V1 game data, carried into the Flask version."""
 
 from operator import itemgetter
+import csv
+from pathlib import Path
 
 franchises = ["Boston Celtics", "Brooklyn Nets", "New York Knicks", "Philadelphia 76ers", "Toronto Raptors",
                   "Chicago Bulls", "Cleveland Cavaliers", "Detroit Pistons", "Indiana Pacers", "Milwaukee Bucks",
@@ -65,6 +67,66 @@ players = {
     "Chet Holmgren": {"position": "C", "salary": 13_731_368, "ppg": 17.1, "rebounds": 8.9, "assists": 1.7, "fg_pct": .557},
     "Ja Morant": {"position": "PG", "salary": 39_446_090, "ppg": 19.5, "rebounds": 3.3, "assists": 8.1, "fg_pct": .410},
 }
+
+def load_csv_players():
+    """Apply CSV profiles/salaries to V1 players and load complete new players.
+
+    Existing V1 stats act as fallbacks while the larger CSV is being filled in.
+    A brand-new player is added only after all game-required stats are present.
+    """
+    import re
+    import unicodedata
+
+    csv_path = Path(__file__).with_name("player_data.csv")
+    if not csv_path.exists():
+        return {}
+
+    csv_players = {}
+    stat_fields = ("ppg", "rebounds", "assists", "fg_pct")
+    required_fields = ("position", "salary", *stat_fields)
+    optional_stat_fields = ("three_pt_pct", "steals", "blocks", "turnovers")
+
+    def name_key(value):
+        normalized = unicodedata.normalize("NFKD", value).encode("ascii", "ignore").decode()
+        return re.sub(r"[^a-z0-9]", "", normalized.casefold())
+
+    existing_names = {name_key(name): name for name in players}
+
+    with csv_path.open(newline="", encoding="utf-8-sig") as data_file:
+        for row in csv.DictReader(data_file):
+            source_name = (row.get("name") or "").strip()
+            if not source_name:
+                continue
+
+            name = existing_names.get(name_key(source_name), source_name)
+            details = dict(players.get(name, {}))
+            try:
+                team = (row.get("team") or "").strip()
+                position = (row.get("position") or "").strip().upper()
+                salary = (row.get("salary") or "").replace("_", "").replace(",", "").replace("$", "").strip()
+
+                if team:
+                    details["team"] = team
+                if position:
+                    details["position"] = position.split("/")[0].strip()
+                if salary:
+                    details["salary"] = int(salary)
+                for field in (*stat_fields, *optional_stat_fields):
+                    value = (row.get(field) or "").strip()
+                    if value:
+                        details[field] = float(value)
+
+                if not all(field in details for field in required_fields):
+                    continue
+                csv_players[name] = details
+            except (TypeError, ValueError):
+                continue
+
+    return csv_players
+
+
+players.update(load_csv_players())
+
 
 player_dicts = list(players.values())
 sorted_players = sorted(player_dicts, key=itemgetter('salary'), reverse=True)
