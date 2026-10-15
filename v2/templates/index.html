@@ -276,7 +276,7 @@
         <div class="section-heading">
         <div>
         <p class="eyebrow">CHALLENGE REVIEW</p>
-        <h2>How you did</h2>
+        <h2>Challenges met</h2>
         </div>
         </div>
 
@@ -286,7 +286,12 @@
         <span class="challenge-result-status">
           {{ "PASSED" if item.passed else "NOT PASSED" }}
         </span>
-        <span>{{ item.text }}</span>
+        <div class="challenge-result-copy">
+          <span>{{ item.text }}</span>
+          {% if item.detail %}
+            <small class="challenge-result-detail">{{ item.detail }}</small>
+          {% endif %}
+        </div>
         </div>
         {% endfor %}
         </div>

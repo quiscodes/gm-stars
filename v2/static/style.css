@@ -450,6 +450,17 @@ footer {
   line-height: 1.5;
 }
 
+.challenge-result-copy {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.challenge-result-detail {
+  color: #9ca8b8;
+  font-size: 12px;
+}
+
 .challenge-result-status {
   flex: 0 0 88px;
   font-size: 10px;

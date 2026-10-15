@@ -201,6 +201,133 @@ def challenge_pass(rule, roster, assignments=None):
         return sum(item.get("salary", 0) > 35_000_000 for item in details) <= 1
     return False
 
+def challenge_detail(rule, roster, assignments=None):
+    """Return the roster's actual result for a challenge, for the results page."""
+    details = [players[name] for name in roster]
+    by_position = {player["position"]: player for player in details}
+    teams = [player.get("team", "") for player in details]
+    assignments = assignments or {}
+
+    def team_name(team):
+        return TEAM_NAMES.get(team, team) or "no player"
+
+    if rule.startswith("For each position, draft"):
+        picks = [
+            f"{position}: {team_name(by_position.get(position, {}).get('team'))}"
+            f" (required {team_name(team)})"
+            for position, team in assignments.items()
+        ]
+        return "Your picks — " + "; ".join(picks)
+
+    if rule == "Team must satisfy all 5 positions.":
+        filled = sorted(set(by_position))
+        return f"Positions filled: {', '.join(filled) or 'none'} ({len(filled)}/5)."
+
+    if rule.startswith("The ") and " must play for the " in rule:
+        position = rule.split("The ", 1)[1].split(" must play", 1)[0]
+        target = rule.rsplit("the ", 1)[1].rstrip(".")
+        actual = by_position.get(position, {}).get("team", "")
+        return f"Your {position}: {team_name(actual)} (required: {target})."
+
+    if rule.startswith("All five players must play for the "):
+        target = rule.rsplit("the ", 1)[1].rstrip(".")
+        count = sum(team == target for team in teams)
+        return f"Players from {target}: {count}/5 (required: 5)."
+
+    if rule.startswith("At least two players must play for the "):
+        target = rule.rsplit("the ", 1)[1].rstrip(".")
+        count = sum(team == target for team in teams)
+        return f"Players from {target}: {count}/5 (target: at least 2)."
+
+    if rule == "No more than two players may play for the same team.":
+        largest_group = max((teams.count(team) for team in set(teams)), default=0)
+        return f"Most players from one team: {largest_group} (limit: 2)."
+
+    if rule.startswith("At least three players must shoot"):
+        if "from three" in rule:
+            count = sum(player.get("three_pt_pct", 0) >= .35 for player in details)
+            return f"Players at 35% or better from three: {count}/5 (target: 3)."
+        count = sum(player.get("fg_pct", 0) >= .45 for player in details)
+        return f"Players at 45% or better from the field: {count}/5 (target: 3)."
+
+    if rule.startswith("The team average 3-point percentage"):
+        actual = sum(player.get("three_pt_pct", 0) for player in details) / len(details)
+        target = .40 if "40%" in rule else .38
+        return f"Team average: {actual:.1%} from three (target: at least {target:.0%})."
+
+    if rule.startswith("The team average field-goal percentage"):
+        actual = sum(player.get("fg_pct", 0) for player in details) / len(details)
+        return f"Team average: {actual:.1%} from the field (target: at least 47%)."
+
+    if rule.startswith("At least two players must average 20"):
+        count = sum(player.get("ppg", 0) >= 20 for player in details)
+        return f"Players averaging 20+ points: {count}/5 (target: 2)."
+
+    if rule.startswith("At least one player must average 25"):
+        top_scorer = max(player.get("ppg", 0) for player in details)
+        return f"Highest scorer: {top_scorer:.1f} points per game (target: at least 25)."
+
+    if rule.startswith("At least two players must each average 25 or more PRA"):
+        count = sum(
+            player.get("ppg", 0) + player.get("rebounds", 0) + player.get("assists", 0) >= 25
+            for player in details
+        )
+        return f"Players averaging 25+ PRA: {count}/5 (target: 2)."
+
+    if rule.startswith("The point guard must"):
+        actual = by_position.get("PG", {}).get("assists", 0)
+        return f"Your point guard averaged {actual:.1f} assists (target: at least 5)."
+
+    if rule.startswith("The team must combine for at least 15 assists"):
+        actual = sum(player.get("assists", 0) for player in details)
+        return f"Team total: {actual:.1f} assists per game (target: at least 15)."
+
+    if rule.startswith("The center must average at least 8 rebounds"):
+        actual = by_position.get("C", {}).get("rebounds", 0)
+        return f"Your center averaged {actual:.1f} rebounds (target: at least 8)."
+
+    if rule.startswith("The center must average at least 10 rebounds"):
+        actual = by_position.get("C", {}).get("rebounds", 0)
+        return f"Your center averaged {actual:.1f} rebounds (target: at least 10)."
+
+    if rule.startswith("The power forward and center"):
+        actual = (
+            by_position.get("PF", {}).get("rebounds", 0)
+            + by_position.get("C", {}).get("rebounds", 0)
+        )
+        return f"PF and C combined: {actual:.1f} rebounds (target: at least 15)."
+
+    if rule.startswith("The team must combine for at least 5 steals"):
+        steals = sum(player.get("steals", 0) for player in details)
+        blocks = sum(player.get("blocks", 0) for player in details)
+        return f"Team totals: {steals:.1f} steals + {blocks:.1f} blocks = {steals + blocks:.1f} (target: at least 5)."
+
+    if rule.startswith("At least two players must average 1 or more steals"):
+        count = sum(player.get("steals", 0) >= 1 for player in details)
+        return f"Players averaging 1+ steals: {count}/5 (target: 2)."
+
+    if rule.startswith("The center must average at least 1 block"):
+        actual = by_position.get("C", {}).get("blocks", 0)
+        return f"Your center averaged {actual:.1f} blocks (target: at least 1)."
+
+    if rule.startswith("The team must average no more than 7 turnovers"):
+        actual = sum(player.get("turnovers", 0) for player in details)
+        return f"Team total: {actual:.1f} turnovers per game (limit: 7)."
+
+    if rule.startswith("At least three players must average fewer than 2 turnovers"):
+        count = sum(player.get("turnovers", 0) < 2 for player in details)
+        return f"Players under 2 turnovers per game: {count}/5 (target: 3)."
+
+    if rule.startswith("At least two players must have a salary of $30 million or less"):
+        count = sum(player.get("salary", 0) <= 30_000_000 for player in details)
+        return f"Players at $30 million or less: {count}/5 (target: 2)."
+
+    if rule.startswith("No more than one player may have a salary above $35 million"):
+        count = sum(player.get("salary", 0) > 35_000_000 for player in details)
+        return f"Players above $35 million: {count}/5 (limit: 1)."
+
+    return None
+
 
 def check_roster(roster):
     """All mode challenges must pass; every mode includes position coverage."""
@@ -431,17 +558,24 @@ def results():
                 roster,
                 assignments,
             ),
+            "detail": challenge_detail(
+                "For each position, draft a player from its assigned team.",
+                roster,
+                assignments,
+            ),
         })
     else:
         challenge_results.append({
             "text": "Draft one player at each of the five positions.",
             "passed": challenge_pass("Team must satisfy all 5 positions.", roster),
+            "detail": challenge_detail("Team must satisfy all 5 positions.", roster),
         })
 
     for rule in session.get("challenges", []):
         challenge_results.append({
             "text": rule,
             "passed": challenge_pass(rule, roster, assignments),
+            "detail": challenge_detail(rule, roster, assignments),
         })
 
     passed = all(item["passed"] for item in challenge_results)
