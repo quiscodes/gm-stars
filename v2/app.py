@@ -60,14 +60,14 @@ DIFFICULTIES = {
 }
 POSITIONS = ("PG", "SG", "SF", "PF", "C")
 TEAM_NAMES = {
-    "ATL": "Atlanta", "BOS": "Boston", "BKN": "Brooklyn", "CHA": "Charlotte",
-    "CHI": "Chicago", "CLE": "Cleveland", "DAL": "Dallas", "DEN": "Denver",
-    "DET": "Detroit", "GSW": "Golden State", "HOU": "Houston", "IND": "Indiana",
-    "LAC": "LA Clippers", "LAL": "LA Lakers", "MEM": "Memphis", "MIA": "Miami",
-    "MIL": "Milwaukee", "MIN": "Minnesota", "NOP": "New Orleans", "NYK": "New York",
-    "OKC": "Oklahoma City", "ORL": "Orlando", "PHI": "Philadelphia", "PHX": "Phoenix",
-    "POR": "Portland", "SAC": "Sacramento", "SAS": "San Antonio", "TOR": "Toronto",
-    "UTA": "Utah", "WAS": "Washington",
+    "ATL": "Hawks", "BOS": "Celtics", "BKN": "Nets", "CHA": "Hornets",
+    "CHI": "Bulls", "CLE": "Cavaliers", "DAL": "Mavericks", "DEN": "Nuggets",
+    "DET": "Pistons", "GSW": "Warriors", "HOU": "Rockets", "IND": "Pacers",
+    "LAC": "Clippers", "LAL": "Lakers", "MEM": "Grizzlies", "MIA": "Heat",
+    "MIL": "Bucks", "MIN": "Timberwolves", "NOP": "Pelicans", "NYK": "Knicks",
+    "OKC": "Thunder", "ORL": "Magic", "PHI": "76ers", "PHX": "Suns",
+    "POR": "Trail Blazers", "SAC": "Kings", "SAS": "Spurs", "TOR": "Raptors",
+    "UTA": "Jazz", "WAS": "Wizards",
 }
 
 app = Flask(__name__)
@@ -220,7 +220,7 @@ def challenge_detail(rule, roster, assignments=None):
         return "Your picks — " + "; ".join(picks)
 
     if rule == "Team must satisfy all 5 positions.":
-        filled = sorted(set(by_position))
+        filled = [position for position in POSITIONS if position in by_position]
         return f"Positions filled: {', '.join(filled) or 'none'} ({len(filled)}/5)."
 
     if rule.startswith("The ") and " must play for the " in rule:
