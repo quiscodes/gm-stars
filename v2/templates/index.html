@@ -146,7 +146,7 @@
             <div class="challenge-box">
               <p class="challenge-title"><span class="constraint-icon">✦</span><strong>Roster challenges</strong></p>
               <ul class="challenge-list">
-                {% if difficulty == "Hard" %}
+                {% if difficulty == "Impossible" %}
                 {% for challenge in challenges %}
                     <li>{{ challenge }}</li>
                 {% endfor %}
@@ -163,7 +163,7 @@
             <div class="roster-list">
               {% for name in roster %}
                 <div class="roster-row">
-                  <span class="roster-number">0{{ loop.index }}</span>
+                  <span class="roster-number">{{ loop.index }}</span>
                   <span class="player-name">{{ name }}</span>
                   <span class="position-tag">{{ players[name].position }}</span>
                   <span class="salary">${{ "{:,}".format(players[name].salary) }}</span>

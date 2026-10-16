@@ -152,19 +152,13 @@ def challenge_pass(rule, roster, assignments=None):
         position = rule.split("The ", 1)[1].split(" must play", 1)[0]
         team = rule.rsplit("the ", 1)[1].rstrip(".")
         return by_position.get(position, {}).get("team") == team
-    if rule.startswith("All five players must play for the "):
-        team = rule.rsplit("the ", 1)[1].rstrip(".")
-        return all(value == team for value in teams)
     if rule.startswith("At least two players must play for the "):
         team = rule.rsplit("the ", 1)[1].rstrip(".")
         return teams.count(team) >= 2
-    if rule == "No more than two players may play for the same team.":
-        return max((teams.count(team) for team in set(teams)), default=0) <= 2
-    if rule.startswith("At least three players must shoot"):
+    if rule.startswith("At least three players must shoot 35%"):
         return sum(item.get("three_pt_pct", 0) >= .35 for item in details) >= 3
     if rule.startswith("The team average 3-point percentage"):
-        threshold = .40 if "40%" in rule else .38
-        return sum(item.get("three_pt_pct", 0) for item in details) / len(details) >= threshold
+        return sum(item.get("three_pt_pct", 0) for item in details) / len(details) >= .38
     if rule.startswith("At least three players must shoot 45%"):
         return sum(item.get("fg_pct", 0) >= .45 for item in details) >= 3
     if rule.startswith("The team average field-goal percentage"):
@@ -181,8 +175,6 @@ def challenge_pass(rule, roster, assignments=None):
         return sum(item.get("assists", 0) for item in details) >= 15
     if rule.startswith("The center must average at least 8 rebounds"):
         return by_position.get("C", {}).get("rebounds", 0) >= 8
-    if rule.startswith("The center must average at least 10 rebounds"):
-        return by_position.get("C", {}).get("rebounds", 0) >= 10
     if rule.startswith("The power forward and center"):
         return by_position.get("PF", {}).get("rebounds", 0) + by_position.get("C", {}).get("rebounds", 0) >= 15
     if rule.startswith("The team must combine for at least 5 steals"):
@@ -191,10 +183,8 @@ def challenge_pass(rule, roster, assignments=None):
         return sum(item.get("steals", 0) >= 1 for item in details) >= 2
     if rule.startswith("The center must average at least 1 block"):
         return by_position.get("C", {}).get("blocks", 0) >= 1
-    if rule.startswith("The team must average no more than 7 turnovers"):
-        return sum(item.get("turnovers", 0) for item in details) <= 7
-    if rule.startswith("At least three players must average fewer than 2 turnovers"):
-        return sum(item.get("turnovers", 0) < 2 for item in details) >= 3
+    if rule.startswith("The team must average no more than 9 turnovers"):
+        return sum(item.get("turnovers", 0) for item in details) <= 9
     if rule.startswith("At least two players must have a salary of $30 million or less"):
         return sum(item.get("salary", 0) <= 30_000_000 for item in details) >= 2
     if rule.startswith("No more than one player may have a salary above $35 million"):
@@ -229,19 +219,10 @@ def challenge_detail(rule, roster, assignments=None):
         actual = by_position.get(position, {}).get("team", "")
         return f"Your {position}: {team_name(actual)} (required: {target})."
 
-    if rule.startswith("All five players must play for the "):
-        target = rule.rsplit("the ", 1)[1].rstrip(".")
-        count = sum(team == target for team in teams)
-        return f"Players from {target}: {count}/5 (required: 5)."
-
     if rule.startswith("At least two players must play for the "):
         target = rule.rsplit("the ", 1)[1].rstrip(".")
         count = sum(team == target for team in teams)
         return f"Players from {target}: {count}/5 (target: at least 2)."
-
-    if rule == "No more than two players may play for the same team.":
-        largest_group = max((teams.count(team) for team in set(teams)), default=0)
-        return f"Most players from one team: {largest_group} (limit: 2)."
 
     if rule.startswith("At least three players must shoot"):
         if "from three" in rule:
@@ -252,8 +233,7 @@ def challenge_detail(rule, roster, assignments=None):
 
     if rule.startswith("The team average 3-point percentage"):
         actual = sum(player.get("three_pt_pct", 0) for player in details) / len(details)
-        target = .40 if "40%" in rule else .38
-        return f"Team average: {actual:.1%} from three (target: at least {target:.0%})."
+        return f"Team average: {actual:.1%} from three (target: at least 38%)."
 
     if rule.startswith("The team average field-goal percentage"):
         actual = sum(player.get("fg_pct", 0) for player in details) / len(details)
@@ -286,10 +266,6 @@ def challenge_detail(rule, roster, assignments=None):
         actual = by_position.get("C", {}).get("rebounds", 0)
         return f"Your center averaged {actual:.1f} rebounds (target: at least 8)."
 
-    if rule.startswith("The center must average at least 10 rebounds"):
-        actual = by_position.get("C", {}).get("rebounds", 0)
-        return f"Your center averaged {actual:.1f} rebounds (target: at least 10)."
-
     if rule.startswith("The power forward and center"):
         actual = (
             by_position.get("PF", {}).get("rebounds", 0)
@@ -310,13 +286,9 @@ def challenge_detail(rule, roster, assignments=None):
         actual = by_position.get("C", {}).get("blocks", 0)
         return f"Your center averaged {actual:.1f} blocks (target: at least 1)."
 
-    if rule.startswith("The team must average no more than 7 turnovers"):
+    if rule.startswith("The team must average no more than 9 turnovers"):
         actual = sum(player.get("turnovers", 0) for player in details)
-        return f"Team total: {actual:.1f} turnovers per game (limit: 7)."
-
-    if rule.startswith("At least three players must average fewer than 2 turnovers"):
-        count = sum(player.get("turnovers", 0) < 2 for player in details)
-        return f"Players under 2 turnovers per game: {count}/5 (target: 3)."
+        return f"Team total: {actual:.1f} turnovers per game (limit: 9)."
 
     if rule.startswith("At least two players must have a salary of $30 million or less"):
         count = sum(player.get("salary", 0) <= 30_000_000 for player in details)
@@ -373,44 +345,41 @@ def find_affordable_roster(cap, assignments=None):
 
 
 def choose_game_challenges(difficulty, cap):
-    """Create challenges and a feasible team assignment for a new game."""
-    extra_rules = [rule for rule in constraints if rule != constraints[0]
-                   and "{position_team_assignments}" not in rule
-                   and "{position}" not in rule and "{team}" not in rule]
+    """Create mode-specific challenges and ensure a possible roster exists."""
+    extra_rules = [
+        rule for rule in constraints
+        if rule != "Team must satisfy all 5 positions."
+        and "{position_team_assignments}" not in rule
+        and "{position}" not in rule
+        and "{team}" not in rule
+    ]
 
-    if difficulty == "hard":
-        # Try random NBA teams for each position until the salary range has
-        # at least one possible starting five.
-        for _ in range(250):
-            eligible = {
-                pos: sorted({data.get("team") for data in players.values()
-                             if data.get("position") == pos and data.get("team")})
-                for pos in POSITIONS
-            }
-            assignments = {pos: random.choice(eligible[pos]) for pos in POSITIONS}
-            witness = find_affordable_roster(cap, assignments)
-            if witness:
-                viable_rules = [rule for rule in extra_rules
-                                if challenge_pass(rule, witness, assignments)]
-                if viable_rules:
-                    return assignments, [random.choice(viable_rules)]
-        # The team mapping itself is randomly generated; fall back to a valid
-        # lineup's teams if a very low cap has too few random combinations.
+    if difficulty == "easy":
+        return {}, []
+
+    # Hard always has the five-position requirement (shown separately) and
+    # two additional challenges. Impossible also assigns a random team to
+    # each position, then adds two challenges.
+    for _ in range(500):
         witness = find_affordable_roster(cap)
-        if witness:
-            assignments = {players[name]["position"]: players[name].get("team") for name in witness}
-            viable_rules = [rule for rule in extra_rules if challenge_pass(rule, witness, assignments)]
-            return assignments, [random.choice(viable_rules)] if viable_rules else []
-        return {}, []
+        if not witness:
+            return {}, []
 
-    if difficulty == "impossible":
-        for _ in range(80):
-            witness = find_affordable_roster(cap)
-            if witness:
-                viable_rules = [rule for rule in extra_rules if challenge_pass(rule, witness)]
-                if len(viable_rules) >= 2:
-                    return {}, random.sample(viable_rules, 2)
-        return {}, []
+        assignments = {}
+        if difficulty == "impossible":
+            assignments = {
+                players[name]["position"]: players[name].get("team")
+                for name in witness
+            }
+            if any(not assignments.get(position) for position in POSITIONS):
+                continue
+
+        viable_rules = [
+            rule for rule in extra_rules
+            if challenge_pass(rule, witness, assignments)
+        ]
+        if len(viable_rules) >= 2:
+            return assignments, random.sample(viable_rules, 2)
 
     return {}, []
 
@@ -545,7 +514,7 @@ def results():
     assignments = session.get("position_teams", {})
     challenge_results = []
 
-    if session.get("difficulty") == "hard":
+    if assignments:
         assigned_teams = ", ".join(
             f"{position} → {TEAM_NAMES.get(assignments[position], assignments[position])}"
             for position in POSITIONS
