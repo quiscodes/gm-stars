@@ -31,7 +31,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#10151f">
   <title>GM Stars — Build Your Franchise</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css', v='3') }}">
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='gm-stars-logo.svg', v='1') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css', v='4') }}">
   <script src="{{ url_for('static', filename='autocomplete.js', v='3') }}" defer></script>
 </head>
 
@@ -41,7 +42,8 @@
     {# ---------- TOP BAR: logo + tag, shown on every screen ---------- #}
     <header class="topbar">
       <a class="brand" href="{{ url_for('home') }}" aria-label="GM Stars home">
-        <span class="brand-mark">★</span><span>GM <strong>STARS</strong></span>
+        <img class="brand-mark" src="{{ url_for('static', filename='gm-stars-logo.svg', v='1') }}" alt="">
+        <span>GM <strong>STARS</strong></span>
       </a>
       <span class="edition">FRANCHISE BUILDER</span>
     </header>
@@ -65,8 +67,8 @@
               <span>3 / Get your grade</span>
             </div>
           </div>
-          {# Decorative circle, styled in style.css; hidden from screen readers #}
-          <div class="hero-ball" aria-hidden="true"><span>★</span></div>
+          {# The same basketball logo used in the top bar and browser tab. #}
+          <img class="hero-ball" src="{{ url_for('static', filename='gm-stars-logo.svg', v='1') }}" alt="" aria-hidden="true">
         </section>
 
         {# Franchise picker. The form POSTs to /start in app.py. #}
